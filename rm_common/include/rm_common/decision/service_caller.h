@@ -37,9 +37,13 @@
 
 #pragma once
 
+//主要用于时间和持续时间的操作
 #include <chrono>
+//互斥锁（mutex）机制
 #include <mutex>
+
 #include <thread>
+
 #include <utility>
 #include <ros/ros.h>
 #include <ros/service.h>
@@ -56,11 +60,13 @@ public:
   explicit ServiceCallerBase(ros::NodeHandle& nh, const std::string& service_name = "") : fail_count_(0), fail_limit_(0)
   {
     nh.param("fail_limit", fail_limit_, 0);
+//    检查字符串是否为空
     if (!nh.param("service_name", service_name_, service_name) && service_name.empty())
     {
       ROS_ERROR("Service name no defined (namespace: %s)", nh.getNamespace().c_str());
       return;
     }
+//    模板参数
     client_ = nh.serviceClient<ServiceType>(service_name_);
   }
   ServiceCallerBase(ros::NodeHandle& nh, std::string& service_name) : fail_count_(0), fail_limit_(0)
@@ -139,7 +145,9 @@ public:
   explicit SwitchControllersServiceCaller(ros::NodeHandle& nh)
     : ServiceCallerBase<controller_manager_msgs::SwitchController>(nh, "/controller_manager/switch_controller")
   {
+//    表示在控制器切换过程中，系统会尽最大努力启动/停止控制器，但可能不会保证所有操作的严格执行
     service_.request.strictness = service_.request.BEST_EFFORT;
+//    设置 start_asap 为 true，表示一旦接收到服务请求，应该尽快启动相关控制器。
     service_.request.start_asap = true;
   }
   void startControllers(const std::vector<std::string>& controllers)

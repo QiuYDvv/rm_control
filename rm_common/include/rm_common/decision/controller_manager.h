@@ -55,6 +55,7 @@ public:
     if (!nh.hasParam("controllers_list"))
       ROS_ERROR("No controllers defined");
     ROS_INFO("Waiting for load_controller service...");
+//    waitForExistence() 会一直阻塞，直到服务可用。如果服务在超时时间内还没有变得可用，函数会返回 false。
     load_client_.waitForExistence();
     ros::NodeHandle nh_list(nh, "controllers_list");
     XmlRpc::XmlRpcValue controllers;
